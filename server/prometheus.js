@@ -134,8 +134,9 @@ class Prometheus {
      * @returns {string} The sanitized text
      */
     static sanitizeForPrometheus(text) {
-        text = text.replace(/[^a-zA-Z0-9_]/g, "");
-        text = text.replace(/^[^a-zA-Z_]+/, "");
+        text = text.replace(/[^a-zA-Z0-9_.:/]/g, "");
+        text = text.replace(/^[^a-zA-Z_.:/]+/, "");
+
         return text;
     }
 
