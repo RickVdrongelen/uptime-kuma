@@ -97,15 +97,19 @@ class Prometheus {
     }
 
     /**
-     * Sanitize a string to ensure it can be used as a Prometheus label or value.
-     * See https://github.com/louislam/uptime-kuma/pull/4704#issuecomment-2366524692
-     * @param {string} text The text to sanitize
+     * Sanitize a string to ensure it can be used as a Prometheus label or value. * See https://github.com/louislam/uptime-kuma/pull/4704#issuecomment-2366524692 * @param {string} text The text to sanitize
      * @returns {string} The sanitized text
      */
     static sanitizeForPrometheus(text) {
-        text = text.replace(/[^a-zA-Z0-9_]/g, "");
-        text = text.replace(/^[^a-zA-Z_]+/, "");
+        text = text.replace(/[^a-zA-Z0-9_.:/]/g, "");
+        text = text.replace(/^[^a-zA-Z_.:/]+/, "");
+
         return text;
+    }
+
+    static sanitizeLabelValue(text) {
+        // Label values may contain any UTF-8; only drop control characters
+        return text.replace(/[\x00-\x1f\x7f]/g, "").trim();
     }
 
     /**
@@ -125,7 +129,7 @@ class Prometheus {
                 mappedTags[sanitizedTag] = [];
             }
 
-            let tagValue = Prometheus.sanitizeForPrometheus(tag.value || "");
+            let tagValue = Prometheus.sanitizeLabelValue(tag.value || "");
             if (tagValue !== "") {
                 mappedTags[sanitizedTag].push(tagValue);
             }
